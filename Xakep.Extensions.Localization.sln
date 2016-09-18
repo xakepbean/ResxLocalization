@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E26D18E4-DCAE-4717-BA7F-201F0C49D3D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E4E69721-21AF-44BC-9AA1-BCB9C5ED46AD}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Xakep.Extensions.Localization", "src\Xakep.Extensions.Localization\Xakep.Extensions.Localization.xproj", "{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Xakep.AspNetCore.Localization", "src\Xakep.AspNetCore.Localization\Xakep.AspNetCore.Localization.xproj", "{761348DF-95EF-468F-9493-AD8DF1C16C93}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8D0F4C98-8A90-4AF1-B95A-6722B7BC628A}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ResxFileSample", "samples\ResxFileSample\ResxFileSample.xproj", "{54F16792-5D24-48AD-BD26-83552DDFCF5F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{761348DF-95EF-468F-9493-AD8DF1C16C93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{761348DF-95EF-468F-9493-AD8DF1C16C93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{761348DF-95EF-468F-9493-AD8DF1C16C93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{761348DF-95EF-468F-9493-AD8DF1C16C93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54F16792-5D24-48AD-BD26-83552DDFCF5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54F16792-5D24-48AD-BD26-83552DDFCF5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54F16792-5D24-48AD-BD26-83552DDFCF5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54F16792-5D24-48AD-BD26-83552DDFCF5F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA} = {E26D18E4-DCAE-4717-BA7F-201F0C49D3D6}
+		{761348DF-95EF-468F-9493-AD8DF1C16C93} = {E26D18E4-DCAE-4717-BA7F-201F0C49D3D6}
+		{54F16792-5D24-48AD-BD26-83552DDFCF5F} = {8D0F4C98-8A90-4AF1-B95A-6722B7BC628A}
+	EndGlobalSection
+EndGlobal
