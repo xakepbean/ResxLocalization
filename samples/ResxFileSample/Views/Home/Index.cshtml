@@ -1,6 +1,9 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization;
+@inject IViewLocalizer Localizer
+@{
     ViewData["Title"] = "Home Page";
 }
-
-Home Page
+<div style="margin-top: 55px;">
+    @Localizer["HomePage"]   <a asp-controller="Local" asp-action="index">语言管理</a>
+</div>
 

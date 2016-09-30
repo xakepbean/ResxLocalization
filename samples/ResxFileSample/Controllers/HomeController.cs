@@ -16,17 +16,5 @@ namespace ResxFileSample.Controllers
             return View();
         }
         
-
-        public IActionResult Error()
-        {
-            return View();
-        }
-
-
-        public void Sevice()
-        {
-            //HttpContext.RequestServices.GetServices(); 
-        }
-        
     }
 }

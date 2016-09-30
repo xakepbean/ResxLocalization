@@ -23,25 +23,26 @@ namespace Xakep.AspNetCore.Localization
             }
 
             var request = httpContext.Request;
-            if (!request.Path.HasValue || request.Path.Value == "/")
+            //if (!request.Path.HasValue || request.Path.Value == "/")
+            //{
+            //    return Task.FromResult((ProviderCultureResult)null);
+            //}
+
+            var LOptions = httpContext.RequestServices.GetService<IOptions<LocalRequestLocalizationOptions>>();
+            if (LOptions == null)
             {
                 return Task.FromResult((ProviderCultureResult)null);
             }
-            var XOptions = httpContext.Features.Get<ILocalRequestCultureFeature>();
-          
-            if (XOptions == null)
-            {
-                return Task.FromResult((ProviderCultureResult)null);
-            }
+            var XOptions = LOptions.Value.GetReload();
             var segments = request.Path.Value.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            if (XOptions.SupportedAliasUICultures!=null && segments.Length > 0)
+            if (XOptions.SupportedAlias!=null && segments.Length > 0)
             {
-                var vAlias = XOptions.SupportedAliasUICultures.Where(w => w.Key.Equals(segments[0], StringComparison.OrdinalIgnoreCase));
+                var vAlias = XOptions.SupportedAlias.Where(w => w.Enabled && w.Alia.Equals(segments[0], StringComparison.OrdinalIgnoreCase));
                 if (vAlias.Count() > 0)
                 {
                     var UrlCulture = vAlias.First();
                     httpContext.Request.Path = segments.Length == 1 ? "/" : "/" + string.Join("/", segments, 1, segments.Length - 1);
-                    return Task.FromResult(new ProviderCultureResult(UrlCulture.Value, UrlCulture.Value));
+                    return Task.FromResult(new ProviderCultureResult(UrlCulture.Name, UrlCulture.Name));
                 }
             }
 
@@ -68,7 +69,7 @@ namespace Xakep.AspNetCore.Localization
             }
 
 
-            return Task.FromResult((ProviderCultureResult)null);
+            return Task.FromResult(new ProviderCultureResult(XOptions.DefaultCulture));
         }
         private ProviderCultureResult ParseCookieValue(string value)
         {

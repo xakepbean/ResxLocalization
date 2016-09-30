@@ -11,38 +11,58 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using ResxFileSample.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Configuration;
 
 namespace ResxFileSample
 {
     public class Startup
     {
+        public IConfigurationRoot Configuration { get; }
+        public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                 .SetBasePath(env.ContentRootPath)
+                 .AddJsonFile("resxlocalization.json", true, true);
 
+            //if (env.IsDevelopment())
+            //{
+            //    builder.AddUserSecrets();
+            //}
 
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
             services.AddFileLocalization(options => { options.ResourcesPath = "Resources"; });
             services.AddMvcCore()
-            //    .AddRazorViewEngine(option =>
-            //{
-            //    option.ViewLocationFormats.Clear();
-            //    option.ViewLocationFormats.Add("/Views1/{1}/{0}" + RazorViewEngine.ViewExtension);
-            //    option.ViewLocationFormats.Add("/Views1/Shared/{0}" + RazorViewEngine.ViewExtension);
-
-            //    option.AreaViewLocationFormats.Clear();
-            //    option.AreaViewLocationFormats.Add("/Areas/{2}/Views1/{1}/{0}" + RazorViewEngine.ViewExtension);
-            //    option.AreaViewLocationFormats.Add("/Areas/{2}/Views1/Shared/{0}" + RazorViewEngine.ViewExtension);
-            //    option.AreaViewLocationFormats.Add("/Views1/Shared/{0}" + RazorViewEngine.ViewExtension);
-            //})
                     .AddJsonFormatters()
                     .AddViewLocalization()
                     .AddDataAnnotationsLocalization();
+            services.AddLocalRequestLocalization(Configuration);
+          
+            
+            //services.AddLocalRequestLocalization(options =>
+            //{
+            //    var vSupCulture = new List<CultureInfo>()
+            //    {
+            //    new CultureInfo("zh-CN"),
+            //    new CultureInfo("fr-FR"),
+            //    new CultureInfo("en-US")
+            //    };
+            //    options.DefaultRequestCulture = new RequestCulture("zh-CN");
+            //    options.SupportedCultures = vSupCulture;
+            //    options.SupportedUICultures = vSupCulture;
+            //    options.SupportedAliasUICultures = new List<KeyValuePair<string, string>>()
+            //    {
+            //    new KeyValuePair<string,string>("china","zh-CN"),
+            //    new KeyValuePair<string,string>("fr","fr-FR"),
+            //    new KeyValuePair<string,string>("usa","en-US")
+            //    };
+            //});
 
-            // services.AddSingleton<IStringLocalizerFactory, ResourceManagerStringLocalizerFactory>();
-            // services.AddTransient(typeof(IUrlHelper), typeof(UrlLocalHelper));
-
-            services.AddLocalUrl();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,26 +70,8 @@ namespace ResxFileSample
         {
             loggerFactory.AddConsole(LogLevel.Debug);
             loggerFactory.AddDebug();
-            var vSupCulture = new List<CultureInfo>()
-            {
-                new CultureInfo("zh-CN"),
-                new CultureInfo("fr-FR"),
-                new CultureInfo("en-US")
-            };
-
-
-            app.UseLocalRequestLocalization(new LocalRequestLocalizationOptions()
-            {
-                DefaultRequestCulture = new RequestCulture("zh-CN"),
-                SupportedCultures = vSupCulture,
-                SupportedUICultures = vSupCulture,
-                SupportedAliasUICultures = new List<KeyValuePair<string, string>>()
-                {
-                new KeyValuePair<string,string>("china","zh-CN"),
-                new KeyValuePair<string,string>("fr","fr-FR"),
-                new KeyValuePair<string,string>("usa","en-US")
-                }
-            });
+            //启用Resx的本地化
+            app.UseLocalRequestLocalization();
 
             app.UseStaticFiles();
 
@@ -88,8 +90,7 @@ namespace ResxFileSample
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-
         }
     }
+
 }

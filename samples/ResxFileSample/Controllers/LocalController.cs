@@ -21,143 +21,116 @@ using System.Resources;
 using System.Collections;
 using Xakep.Extensions.Localization;
 using Xakep.AspNetCore.Localization;
+using Microsoft.Extensions.Primitives;
 
 namespace ResxFileSample.Controllers
 {
     public class LocalController:Controller
     {
         private IHostingEnvironment _env = null;
-        public LocalController(IHostingEnvironment env)
+        LocalRequestLocalizationOptions _options;
+        public LocalController(IHostingEnvironment env, IOptions<LocalRequestLocalizationOptions> options)
         {
             _env = env;
+            _options = options.Value.GetReload();
         }
 
         public ActionResult Add()
         {
+            //System.Globalization.
             return View();
         }
 
         [HttpPost]
-        public ActionResult Add(List<Person> persons, List<string> movies)
+        public ActionResult Add(string Culture, string AliaName)
         {
-            return View();
+            _options.SupportedAlias.Add(new AliasCulture() { Alia=AliaName, Enabled=true, Name=Culture });
+            string SaveJson= _options.ToJson();
+            System.IO.File.WriteAllText(Path.Combine(_env.ContentRootPath, "resxlocalization.json"), SaveJson);
+            return RedirectToAction("Index");
         }
 
-        public IActionResult Index() {
-            var requestCulture = HttpContext.Features.Get<IRequestCultureFeature>();
-            RequestCultureProvider AcceptUI = requestCulture.Provider as RequestCultureProvider;
-            return View(AcceptUI.Options.SupportedCultures);
+        public IActionResult Index()
+        {
+            //var XOptions = HttpContext.RequestServices.GetService<IOptions<LocalRequestLocalizationOptions>>();
+            return View(_options.SupportedAlias.Select(w=> new AliasCultureModel() { Name=w.Name, Alia=w.Alia,Enabled=w.Enabled }).ToList());
         }
 
         public List<TreeNode> ResxFile(string ID)
         {
+            string CultureName = ID;
             var locOptions = HttpContext.RequestServices.GetService<IOptions<FileLocalizationOptions>>();
-            var XOptions = HttpContext.RequestServices.GetService<IOptions<LocalRequestLocalizationOptions>>();
             string ResourcesPath = locOptions.Value.ResourcesPath.Split(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries)[0];
-            var razorOptions = HttpContext.RequestServices.GetService<IOptions<RazorViewEngineOptions>>();
-
-            var razorPath = razorOptions.Value.AreaViewLocationFormats.Select(w =>
-            {
-                var vpath = w.TrimStart('/').Split('/');
-                if (vpath.Length > 0)
-                    return vpath[0];
-                return string.Empty;
-            }).Where(w => !string.IsNullOrWhiteSpace(w)).Distinct().Concat(
-             razorOptions.Value.ViewLocationFormats.Select(w =>
-            {
-                var vpath = w.TrimStart('/').Split('/');
-                if (vpath.Length > 0)
-                    return vpath[0];
-                return string.Empty;
-            }).Where(w => !string.IsNullOrWhiteSpace(w)).Distinct()).Distinct();
-
+            
             List<TreeNode> ReturnTree = new List<TreeNode>();
-            if (string.IsNullOrWhiteSpace(ID))
+            if (string.IsNullOrWhiteSpace(CultureName))
             {
                 ReturnTree.Add(new TreeNode() { id = ResourcesPath, name = ResourcesPath, isParent = true });
-                //ReturnTree.AddRange(razorPath.Where(w => _env.ContentRootFileProvider.GetDirectoryContents(w).Exists).Select(w => new TreeNode() { id = w, name = w, isParent = true }));
             }
             else
             {
-                var vRoorDir= ID.Split('.')[0];
-                if (razorPath.Contains(vRoorDir))
+                CultureName += ".";
+                var vResource = Assembly.GetEntryAssembly().GetManifestResourceNames().Select(w => w.Substring(w.IndexOf('.') + 1)).Where(w => w.StartsWith(CultureName));
+                ReturnTree.AddRange(vResource.Select(w =>
                 {
-                    ID = ID.Replace('.', '/');
-                    var vDir = _env.ContentRootFileProvider.GetDirectoryContents(ID);
-                    if (vDir.Exists)
+                    var vID = w.Substring(0, w.IndexOf('.', CultureName.Length));
+                    var vName = vID.Substring(CultureName.Length);
+                    var vLast = w.Substring(vID.Length);
+                    vName += vLast.Length > 10 ? "" : ".resx";
+                    return new TreeNode()
                     {
-                        var vFile = vDir.GetEnumerator();
-                        while (vFile.MoveNext())
-                        {
-                            ReturnTree.Add(new TreeNode()
-                            {
-                                id = vFile.Current.PhysicalPath.Substring(_env.ContentRootPath.Length+1).Replace(Path.DirectorySeparatorChar,'.'),
-                                name = vFile.Current.Name,
-                                isParent = vFile.Current.IsDirectory
-                            });
-                        }
-                    }
-                }
-                else
-                {
-                    ID += ".";
-                    var vResource = Assembly.GetEntryAssembly().GetManifestResourceNames().Select(w => w.Substring(w.IndexOf('.') + 1)).Where(w => w.StartsWith(ID));
-                    ReturnTree.AddRange(vResource.Select(w =>
-                    {
-                        var vID = w.Substring(0, w.IndexOf('.', ID.Length));
-                        var vName = vID.Substring(ID.Length);
-                        var vLast = w.Substring(vID.Length);
-                        vName += vLast.Length > 10 ? "" : ".resx";
-                        return new TreeNode()
-                        {
-                            id = vID,
-                            name = vName,
-                            isParent = vLast.Length > 10
-                        };
-                    }).Distinct());
-                }
+                        id = vID,
+                        name = vName,
+                        isParent = vLast.Length > 10
+                    };
+                }).Distinct());
+
             }
             return ReturnTree;
+        }
+
+        public IActionResult EditLang(string ID)
+        {
+            return View(_options.SupportedAlias.Where(w=>w.Name.Equals(ID,StringComparison.OrdinalIgnoreCase))
+                .Select(w=> new AliasCultureModel() { Name = w.Name, Alia = w.Alia, Enabled = w.Enabled }).First());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditLang(string ID, AliasCultureModel Model)
+        {
+            if (ModelState.IsValid)
+            {
+            }
+            return View(Model);
         }
 
         public IActionResult Edit(string ID)
         {
             return View(ResxFile(null));
         }
-        
+
         public IActionResult EditResx(string ID, string ReName)
         {
-            if (string.IsNullOrWhiteSpace(ID) || string.IsNullOrWhiteSpace(ReName))
+            string CultureName = ID;
+            if (string.IsNullOrWhiteSpace(CultureName) || string.IsNullOrWhiteSpace(ReName))
             {
                 return View(new List<ResouresEditModel>());
             }
-
             ViewData["ReName"] = ReName;
-            if (ReName.EndsWith(".cshtml",StringComparison.OrdinalIgnoreCase))
-            {
-                var locOptions = HttpContext.RequestServices.GetService<IOptions<LocalizationOptions>>();
-                string ResourcesPath = Path.Combine(_env.ContentRootPath, locOptions.Value.ResourcesPath);
-
-                string MapPath = Path.Combine(ResourcesPath, ReName.Replace('.', Path.DirectorySeparatorChar) + ".resx");
-                string NewMapPath = Path.Combine(ResourcesPath, ReName.Replace('.', Path.DirectorySeparatorChar) + "." + ID + ".resx");
-                return View(new List<ResouresEditModel>()); //return View(LoadResource(MapPath, NewMapPath));
-            }
-            else
-            {               
-                return View(LoadResource(ID, ReName));
-            }
-
+            return View(LoadResource(CultureName, ReName));
         }
-      
+
         [HttpPost]
         public IActionResult EditResx(string ID, string ReName, List<ResouresEditModel> RMode)
         {
-            if (string.IsNullOrWhiteSpace(ID) || string.IsNullOrWhiteSpace(ReName))
+            string CultureName = ID;
+            if (string.IsNullOrWhiteSpace(CultureName) || string.IsNullOrWhiteSpace(ReName))
             {
                 return View(RMode);
             }
             ViewData["ReName"] = ReName;
-            SaveResource(ID, ReName, RMode);
+            SaveResource(CultureName, ReName, RMode);
             return View(RMode);
         }
 
@@ -183,7 +156,7 @@ namespace ResxFileSample.Controllers
                 }
             }
             #endregion
-            var vResxFile = _env.ContentRootFileProvider.GetFileInfo(ResourceName + "." + CultureName + ".resx");
+            var vResxFile = _env.ContentRootFileProvider.GetFileInfo(ResourceName.Replace('.',Path.DirectorySeparatorChar) + "." + CultureName + ".resx");
             if (vResxFile.Exists)
             {
                 Dictionary<string, string> DicNew = new Dictionary<string, string>();
@@ -257,25 +230,56 @@ namespace ResxFileSample.Controllers
             return RMode;
         }
 
-        public IActionResult Create() => View();
+        //public IActionResult Create() => View();
 
-        public IActionResult CreateLang(string ID)
+        //public IActionResult CreateLang(string ID)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(ID))
+        //    {
+        //        var requestCulture = HttpContext.Features.Get<IRequestCultureFeature>();
+        //        RequestCultureProvider AcceptUI = requestCulture.Provider as RequestCultureProvider;
+        //        CultureInfo CInfo = new CultureInfo(ID);
+        //        if (AcceptUI.Options.SupportedCultures.Where(w => w.Name == ID).Count() == 0)
+        //        {
+        //            AcceptUI.Options.SupportedUICultures.Add(CInfo);
+        //            AcceptUI.Options.SupportedCultures.Add(CInfo);
+        //        }
+        //    }
+
+        //    return RedirectToAction("Index");
+        //}
+
+        public void Redirect()
         {
-            if (!string.IsNullOrWhiteSpace(ID))
+            string culture = null;
+            string returnUrl = null;
+            if (HttpContext.Request.Form["culture"] != StringValues.Empty)
+                culture = HttpContext.Request.Form["culture"].ToString();
+
+            if (HttpContext.Request.Form["returnUrl"] != StringValues.Empty)
+                returnUrl = HttpContext.Request.Form["returnUrl"].ToString();
+
+            if (culture == null && HttpContext.Request.Query["culture"] != StringValues.Empty)
+                culture = HttpContext.Request.Query["culture"].ToString();
+
+            if (returnUrl == null && HttpContext.Request.Query["returnUrl"] != StringValues.Empty)
+                returnUrl = HttpContext.Request.Query["returnUrl"].ToString();
+
+            if (culture != null && returnUrl != null)
             {
-                var requestCulture = HttpContext.Features.Get<IRequestCultureFeature>();
-                RequestCultureProvider AcceptUI = requestCulture.Provider as RequestCultureProvider;
-                CultureInfo CInfo = new CultureInfo(ID);
-                if (AcceptUI.Options.SupportedCultures.Where(w => w.Name == ID).Count() == 0)
+                if (!_options.SupportedDefaultAlias && culture.Equals(_options.DefaultCulture, StringComparison.OrdinalIgnoreCase))
                 {
-                    AcceptUI.Options.SupportedUICultures.Add(CInfo);
-                    AcceptUI.Options.SupportedCultures.Add(CInfo);
+                    HttpContext.Response.Redirect(returnUrl);
+                    return;
                 }
+                var vSupport = _options.SupportedAlias.Where(w => w.Enabled && w.Name.Equals(culture, StringComparison.OrdinalIgnoreCase));
+                if (vSupport.Count() == 0)
+                {
+                    HttpContext.Response.Redirect(returnUrl);
+                    return;
+                }
+                HttpContext.Response.Redirect("/" + vSupport.First().Alia + returnUrl);
             }
-
-            return RedirectToAction("Index");
         }
-
-        public IActionResult Redirect() => RedirectToAction("Index");
     }
 }

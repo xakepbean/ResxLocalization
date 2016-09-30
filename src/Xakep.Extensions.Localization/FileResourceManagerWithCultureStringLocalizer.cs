@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
-using Microsoft.Extensions.Localization.Internal;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 

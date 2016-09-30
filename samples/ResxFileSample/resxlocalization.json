@@ -1,0 +1,41 @@
+{
+  "DefaultCulture": "en-US",
+  "AcceptLanguage": false,
+  "AcceptCookie": false,
+  "SupportedDefaultAlias": false,
+  "AcceptQueryString": false,
+  "CookieName": ".AspNetCore.Culture",
+  "QueryStringKey": "cultureas",
+  "SupportedAlias": [
+    {
+      "Name": "zh-CN",
+      "Alia": "china",
+      "Enabled": true
+    },
+    {
+      "Name": "fr-FR",
+      "Alia": "fr",
+      "Enabled": true
+    },
+    {
+      "Name": "en-US",
+      "Alia": "usa",
+      "Enabled": true
+    },
+    {
+      "Name": "af-ZA",
+      "Alia": "ddd",
+      "Enabled": true
+    },
+    {
+      "Name": "zh-HK",
+      "Alia": "sss",
+      "Enabled": true
+    },
+    {
+      "Name": "en-GY",
+      "Alia": "fdgfds",
+      "Enabled": true
+    }
+  ]
+}

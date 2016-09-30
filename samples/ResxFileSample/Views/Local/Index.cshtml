@@ -1,4 +1,7 @@
-﻿@model IList<System.Globalization.CultureInfo>
+﻿@using ResxFileSample.Models;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@model IEnumerable<AliasCultureModel>
+@inject IViewLocalizer Localizer
 
 @{
     ViewData["Title"] = "国际语言管理";
@@ -7,17 +10,18 @@
 <h2>Index</h2>
 
 <p>
-    <a asp-action="Create">添加语言</a>
+    <a asp-action="Add">@Localizer["CreateLang"]</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-              语言包  @*@Html.DisplayNameFor(model => model.Enabled)*@
+                @Localizer["Name"]@*@Html.DisplayNameFor(model => model.Name)*@
             </th>
             <th>
-              启用  @*@Html.DisplayNameFor(model => model.Name)*@
+                @Localizer["Alia"]@*@Html.DisplayNameFor(model => model.Alia)*@
             </th>
+            <th>@Localizer["Enabled"]@*@Html.DisplayNameFor(model => model.Enabled)*@</th>
             <th></th>
         </tr>
     </thead>
@@ -26,18 +30,17 @@
         {
             <tr>
                 <td>
-                  @Html.DisplayFor(modelItem => item.DisplayName) (
-                    @Html.DisplayFor(modelItem => item.Name) 
-                                         @Html.DisplayFor(modelItem => item.EnglishName)
-                                        @Html.DisplayFor(modelItem => item.NativeName))
+                    @Html.DisplayFor(modelItem => item.Culture.NativeName)
                 </td>
                 <td>
-                   @*@Html.DisplayFor(modelItem => item.Enabled)*@
+                    @Html.DisplayFor(modelItem => item.Alia)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Name">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Name">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Name">Delete</a>
+                    @Html.DisplayFor(modelItem => item.Enabled)
+                </td>
+                <td>
+                    <a asp-action="EditLang" asp-route-id="@item.Name">@Localizer["EditLang"]</a>
+                    <a asp-action="Edit" asp-route-id="@item.Name">@Localizer["EditResx"]</a> |
                 </td>
             </tr>
         }

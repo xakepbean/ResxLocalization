@@ -1,19 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 
 namespace Xakep.AspNetCore.Localization
 {
@@ -150,77 +145,28 @@ namespace Xakep.AspNetCore.Localization
                 && string.IsNullOrEmpty(fragment)
                 && !pathBase.HasValue)
             {
-                if (pathData.VirtualPath.Length == 0)
+                var Options = HttpContext.RequestServices.GetService<IOptions<LocalRequestLocalizationOptions>>();
+
+                if (Options == null)
                 {
-                    url = "/";
+                    url = pathData.VirtualPath;
                     return true;
                 }
-                else if (pathData.VirtualPath.StartsWith("/", StringComparison.Ordinal))
-                {
-                    var XOptions = HttpContext.Features.Get<ILocalRequestCultureFeature>();
-                    if (XOptions == null)
-                    {
-                        url = pathData.VirtualPath;
-                        return true;
-                    }
 
-                    if (XOptions.SupportedAliasUICultures != null && (XOptions.SupportedDefaultAlias || (!XOptions.SupportedDefaultAlias && CultureInfo.CurrentUICulture.Name != XOptions.DefaultRequestCulture.Culture.Name)))
-                    {
-                        var vAlias = XOptions.SupportedAliasUICultures.Where(w => w.Value.Equals(CultureInfo.CurrentUICulture.Name, StringComparison.OrdinalIgnoreCase));
-                        if (vAlias.Count() > 0)
-                            url = "/" + vAlias.First().Key + pathData.VirtualPath;
-                        else
-                            url = pathData.VirtualPath;
-                    }
+                var XOptions = Options.Value.GetReload();
+                if (XOptions.SupportedAlias != null && (XOptions.SupportedDefaultAlias || (!XOptions.SupportedDefaultAlias && CultureInfo.CurrentUICulture.Name != XOptions.DefaultRequestCulture.Culture.Name)))
+                {
+                    var vAlias = XOptions.SupportedAlias.Where(w => w.Enabled && w.Name.Equals(CultureInfo.CurrentUICulture.Name, StringComparison.OrdinalIgnoreCase));
+                    if (vAlias.Count() > 0)
+                        url = "/" + vAlias.First().Alia + pathData.VirtualPath;
                     else
                         url = pathData.VirtualPath;
-                    return true;
                 }
+                else
+                    url = pathData.VirtualPath;
+                return true;
             }
-
             return false;
-        }
-
-
-        public static async Task RedirectLocal(HttpContext HttpContext)
-        {
-            string culture = null;
-            string returnUrl = null;
-            if (HttpContext.Request.Form["culture"] != StringValues.Empty)
-                culture = HttpContext.Request.Form["culture"].ToString();
-
-            if (HttpContext.Request.Form["returnUrl"] != StringValues.Empty)
-                returnUrl = HttpContext.Request.Form["returnUrl"].ToString();
-
-            if (culture == null && HttpContext.Request.Query["culture"] != StringValues.Empty)
-                culture = HttpContext.Request.Query["culture"].ToString();
-
-            if (returnUrl == null && HttpContext.Request.Query["returnUrl"] != StringValues.Empty)
-                returnUrl = HttpContext.Request.Query["returnUrl"].ToString();
-
-            if (culture != null && returnUrl != null)
-            {
-                var XOptions = HttpContext.Features.Get<ILocalRequestCultureFeature>();
-                if (XOptions == null)
-                {
-                    HttpContext.Response.Redirect(returnUrl);
-                    return;
-                }
-                if (!XOptions.SupportedDefaultAlias && XOptions.DefaultRequestCulture.UICulture.Name.Equals(culture, StringComparison.OrdinalIgnoreCase))
-                {
-                    HttpContext.Response.Redirect(returnUrl);
-                    return;
-                }
-                var vA = XOptions.SupportedAliasUICultures.Where(w => w.Value.Equals(culture, StringComparison.OrdinalIgnoreCase));
-                if (vA.Count() == 0)
-                {
-                    HttpContext.Response.Redirect(returnUrl);
-                    return;
-                }
-                HttpContext.Response.Redirect("/" + vA.First().Key + returnUrl);
-                return;
-            }
-            await HttpContext.Response.WriteAsync("Can not find culture and returnUrl");
         }
 
     }
@@ -257,21 +203,5 @@ namespace Xakep.AspNetCore.Localization
             return urlHelper;
         }
     }
-    public static class LocalizationServiceCollectionExtensions
-    {
-        /// <summary>
-        /// Adds services required for application localization.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
-        /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddLocalUrl(this IServiceCollection services)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-            services.AddSingleton<IUrlHelperFactory, UrlLocalHelperFactory>();
-            return services;
-        }
-    }
+   
 }

@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization;
+@inject IViewLocalizer Localizer
+@model ResxFileSample.Models.AliasCultureModel
+<div id="divContent" style="margin-top: 55px;">
+    <form asp-action="EditLang">
+        <table>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Name)
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Name) @Html.ValidationMessageFor(model => model.Name)
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(model => model.Alia)</td>
+                <td>@Html.TextBoxFor(model => model.Alia)
+                @Html.ValidationMessageFor(model=>model.Alia)</td>
+            </tr>
+            <tr>
+                <td>@Html.DisplayNameFor(model => model.Enabled)</td>
+                <td>@Html.CheckBoxFor(model => model.Enabled)</td>
+            </tr>
+        </table>
+        <input type="submit" value="编辑" class="btn btn-default" />
+
+    </form>
+</div>
