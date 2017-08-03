@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E26D18E4-DCAE-4717-BA7F-201F0C49D3D6}"
 EndProject
@@ -9,16 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		global.json = global.json
 	EndProjectSection
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Xakep.Extensions.Localization", "src\Xakep.Extensions.Localization\Xakep.Extensions.Localization.xproj", "{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Xakep.AspNetCore.Localization", "src\Xakep.AspNetCore.Localization\Xakep.AspNetCore.Localization.xproj", "{761348DF-95EF-468F-9493-AD8DF1C16C93}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8D0F4C98-8A90-4AF1-B95A-6722B7BC628A}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ResxFileSample", "samples\ResxFileSample\ResxFileSample.xproj", "{54F16792-5D24-48AD-BD26-83552DDFCF5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xakep.Extensions.Localization", "src\Xakep.Extensions.Localization\Xakep.Extensions.Localization.csproj", "{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xakep.AspNetCore.Localization", "src\Xakep.AspNetCore.Localization\Xakep.AspNetCore.Localization.csproj", "{761348DF-95EF-468F-9493-AD8DF1C16C93}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResxFileSample", "samples\ResxFileSample\ResxFileSample.csproj", "{54F16792-5D24-48AD-BD26-83552DDFCF5F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xakep.AspNetCore.Localization.TagHelpers", "src\Xakep.AspNetCore.Localization.TagHelpers\Xakep.AspNetCore.Localization.TagHelpers.csproj", "{B1E6709C-8C19-4D1E-B55D-2862BCD71BFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +39,10 @@ Global
 		{54F16792-5D24-48AD-BD26-83552DDFCF5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54F16792-5D24-48AD-BD26-83552DDFCF5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54F16792-5D24-48AD-BD26-83552DDFCF5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1E6709C-8C19-4D1E-B55D-2862BCD71BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1E6709C-8C19-4D1E-B55D-2862BCD71BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1E6709C-8C19-4D1E-B55D-2862BCD71BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1E6709C-8C19-4D1E-B55D-2862BCD71BFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,5 +51,9 @@ Global
 		{66B0A93B-8DF1-44CE-BF61-D5F5766FB4BA} = {E26D18E4-DCAE-4717-BA7F-201F0C49D3D6}
 		{761348DF-95EF-468F-9493-AD8DF1C16C93} = {E26D18E4-DCAE-4717-BA7F-201F0C49D3D6}
 		{54F16792-5D24-48AD-BD26-83552DDFCF5F} = {8D0F4C98-8A90-4AF1-B95A-6722B7BC628A}
+		{B1E6709C-8C19-4D1E-B55D-2862BCD71BFF} = {E26D18E4-DCAE-4717-BA7F-201F0C49D3D6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D0447C99-D402-4B70-A2D3-22BA1BD0882B}
 	EndGlobalSection
 EndGlobal

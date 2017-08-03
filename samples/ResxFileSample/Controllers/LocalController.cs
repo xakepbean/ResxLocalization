@@ -105,6 +105,20 @@ namespace ResxFileSample.Controllers
             return View(Model);
         }
 
+        public IActionResult DeleteLang(string ID)
+        {
+            for (int i = _options.SupportedAlias.Count-1; i >=0 ; i--)
+            {
+                if (_options.SupportedAlias[i].Name.Equals(ID, StringComparison.OrdinalIgnoreCase))
+                {
+                    _options.SupportedAlias.RemoveAt(i);
+                    break;  
+                }
+            }
+            string SaveJson = _options.ToJson();
+            return RedirectToAction("index");
+        }
+
         public IActionResult Edit(string ID)
         {
             return View(ResxFile(null));

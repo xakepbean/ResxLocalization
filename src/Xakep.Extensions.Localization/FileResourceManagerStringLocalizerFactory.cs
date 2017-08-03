@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Xakep.Extensions.Localization
 {
@@ -26,6 +27,8 @@ namespace Xakep.Extensions.Localization
         private readonly string _ResourcePath;
         private readonly IFileProvider _fileProvider;
         private readonly bool _EnabledFiles = false;
+        private readonly ILoggerFactory _loggerFactory;
+
         /// <summary>
         /// Creates a new <see cref="FileResourceManagerStringLocalizer"/>.
         /// </summary>
@@ -33,7 +36,8 @@ namespace Xakep.Extensions.Localization
         /// <param name="localizationOptions">The <see cref="IOptions{LocalizationOptions}"/>.</param>
         public FileResourceManagerStringLocalizerFactory(
             IHostingEnvironment hostingEnvironment,
-            IOptions<FileLocalizationOptions> localizationOptions)
+            IOptions<FileLocalizationOptions> localizationOptions,
+            ILoggerFactory loggerFactory)
         {
             if (hostingEnvironment == null)
             {
@@ -44,7 +48,7 @@ namespace Xakep.Extensions.Localization
             {
                 throw new ArgumentNullException(nameof(localizationOptions));
             }
-            
+            _loggerFactory = loggerFactory;
             _hostingEnvironment = hostingEnvironment;
             _resourcesRelativePath = localizationOptions.Value.ResourcesPath ?? string.Empty;
             _EnabledFiles = localizationOptions.Value.EnabledFiles;
@@ -147,6 +151,7 @@ namespace Xakep.Extensions.Localization
                     assembly,
                     baseName,
                     _resourceNamesCache,
+                    _loggerFactory.CreateLogger<FileResourceManagerStringLocalizerFactory>(),
                     _fileProvider,
                     _ResourcePath,
                     pathName,
@@ -180,6 +185,7 @@ namespace Xakep.Extensions.Localization
                     assembly,
                     baseName,
                     _resourceNamesCache,
+                    _loggerFactory.CreateLogger<FileResourceManagerStringLocalizerFactory>(),
                     _fileProvider,
                     _ResourcePath,
                     pathName,

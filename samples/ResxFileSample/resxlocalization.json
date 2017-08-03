@@ -36,6 +36,11 @@
       "Name": "en-GY",
       "Alia": "fdgfds",
       "Enabled": true
+    },
+    {
+      "Name": "aa-DJ",
+      "Alia": "aadj",
+      "Enabled": true
     }
   ]
 }

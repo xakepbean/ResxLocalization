@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Localization.Internal;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Concurrent;
@@ -22,6 +22,7 @@ namespace Xakep.Extensions.Localization
         private readonly ConcurrentDictionary<string, object> _missingManifestCache = new ConcurrentDictionary<string, object>();
         private readonly string _resourcePath;
         private readonly IFileProvider _fileProvider;
+        private ILogger _logger;
 
         private readonly bool _EnabledFiles = false;
         protected internal string PathName { get; set; }
@@ -43,12 +44,13 @@ namespace Xakep.Extensions.Localization
             ResourceManager resourceManager,
             Assembly resourceAssembly,
             string baseName,
-            IResourceNamesCache resourceNamesCache, IFileProvider fileProvider, string resourcePath, string pathName, bool EnabledFiles)
+            IResourceNamesCache resourceNamesCache,ILogger logger, IFileProvider fileProvider, string resourcePath, string pathName, bool EnabledFiles)
             : base(
                   resourceManager,
                   resourceAssembly,
                   baseName,
-                  resourceNamesCache)
+                  resourceNamesCache,
+                  logger)
         {
             if (resourceAssembly == null)
             {
@@ -62,6 +64,7 @@ namespace Xakep.Extensions.Localization
             _resourceManager = resourceManager;
             _resourceBaseName = baseName;
             _resourceNamesCache = resourceNamesCache;
+            _logger = logger;
         }
 
         public override LocalizedString this[string name]
@@ -152,6 +155,7 @@ namespace Xakep.Extensions.Localization
                     _resourceAssembly,
                     _resourceBaseName,
                     _resourceNamesCache,
+                    _logger,
                     _fileProvider,
                     _resourcePath,
                     PathName,
@@ -161,6 +165,7 @@ namespace Xakep.Extensions.Localization
                     _resourceAssembly,
                     _resourceBaseName,
                     _resourceNamesCache,
+                    _logger,
                     culture,
                     _fileProvider,
                     _resourcePath,

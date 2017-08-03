@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Options;
 
 namespace Xakep.AspNetCore.Localization
 {
@@ -40,27 +41,7 @@ namespace Xakep.AspNetCore.Localization
         }
 
         public static IServiceCollection AddLocalRequestLocalization(
-            this IServiceCollection services,
-            IConfiguration Config)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (Config == null)
-            {
-                throw new ArgumentNullException(nameof(Config));
-            }
-            services.AddOptions();
-            
-            services.Configure<LocalRequestLocalizationOptions>(options =>  {
-                options.FormatJson(Config);
-            });
-            services.AddSingleton<IUrlHelperFactory, UrlLocalHelperFactory>();
-            return services;
-        }
-
-
+            this IServiceCollection services,IConfiguration config) => AddLocalRequestLocalization(services, p => p.FormatJson(config));
+       
     }
 }

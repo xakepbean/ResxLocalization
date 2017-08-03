@@ -68,7 +68,7 @@ namespace Xakep.AspNetCore.Localization
         }
 
         public LocalUrlHelper(ActionContext actionContext) : base(actionContext) { }
-        
+
         /// <summary>
         /// Generates the URL using the specified components.
         /// </summary>
@@ -149,8 +149,7 @@ namespace Xakep.AspNetCore.Localization
 
                 if (Options == null)
                 {
-                    url = pathData.VirtualPath;
-                    return true;
+                    return TryFastGenerateUrl(pathData, out url);
                 }
 
                 var XOptions = Options.Value.GetReload();
@@ -158,12 +157,30 @@ namespace Xakep.AspNetCore.Localization
                 {
                     var vAlias = XOptions.SupportedAlias.Where(w => w.Enabled && w.Name.Equals(CultureInfo.CurrentUICulture.Name, StringComparison.OrdinalIgnoreCase));
                     if (vAlias.Count() > 0)
+                    {
                         url = "/" + vAlias.First().Alia + pathData.VirtualPath;
+                        return true;
+                    }
                     else
-                        url = pathData.VirtualPath;
+                        return TryFastGenerateUrl(pathData, out url);
                 }
                 else
-                    url = pathData.VirtualPath;
+                    return TryFastGenerateUrl(pathData, out url);
+            }
+            return false;
+        }
+
+        private bool TryFastGenerateUrl(VirtualPathData pathData, out string url)
+        {
+            url = null;
+            if (pathData.VirtualPath.Length == 0)
+            {
+                url = "/";
+                return true;
+            }
+            else if (pathData.VirtualPath.StartsWith("/", StringComparison.Ordinal))
+            {
+                url = pathData.VirtualPath;
                 return true;
             }
             return false;
@@ -203,5 +220,5 @@ namespace Xakep.AspNetCore.Localization
             return urlHelper;
         }
     }
-   
+
 }

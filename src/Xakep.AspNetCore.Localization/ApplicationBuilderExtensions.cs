@@ -25,7 +25,7 @@ namespace Xakep.AspNetCore.Localization
         /// <param name="options">The <see cref="RequestLocalizationOptions"/> to configure the middleware with.</param>
         /// <returns>The <see cref="IApplicationBuilder"/>.</returns>
         public static IApplicationBuilder UseLocalRequestLocalization(
-            this IApplicationBuilder app)
+            this IApplicationBuilder app)  
         {
             
             if (app == null)

@@ -41,6 +41,7 @@
                 <td>
                     <a asp-action="EditLang" asp-route-id="@item.Name">@Localizer["EditLang"]</a>
                     <a asp-action="Edit" asp-route-id="@item.Name">@Localizer["EditResx"]</a> |
+                    <a asp-action="DeleteLang" asp-route-id="@item.Name">@Localizer["Delete"]</a>
                 </td>
             </tr>
         }

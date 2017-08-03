@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Resources;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Xakep.Extensions.Localization
 {
@@ -36,9 +37,9 @@ namespace Xakep.Extensions.Localization
             ResourceManager resourceManager,
             Assembly resourceAssembly,
             string baseName,
-            IResourceNamesCache resourceNamesCache,
+            IResourceNamesCache resourceNamesCache, ILogger logger,
             CultureInfo culture, IFileProvider fileProvider, string resourcePath, string pathName, bool EnabledFiles)
-            : base(resourceManager, resourceAssembly, baseName, resourceNamesCache, fileProvider, resourcePath,pathName,EnabledFiles)
+            : base(resourceManager, resourceAssembly, baseName, resourceNamesCache, logger, fileProvider, resourcePath,pathName,EnabledFiles)
         {
             if (resourceManager == null)
             {

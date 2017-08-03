@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
 
 namespace ResxFileSample
 {
@@ -12,16 +15,12 @@ namespace ResxFileSample
     {
         public static void Main(string[] args)
         {
-#if NETCOREAPP1_0
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);//不加入这个 控制台输出的中文会是乱码
-#endif
-            var host = new WebHostBuilder()
-                .UseKestrel().UseUrls("http://*:5000").UseEnvironment("Development")
-                .UseContentRoot(Directory.GetCurrentDirectory())
+            BuildWebHost(args).Run();
+        }
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .Build();
-
-            host.Run();
-        }
     }
 }

@@ -17,59 +17,41 @@ namespace ResxFileSample
 {
     public class Startup
     {
-        public IConfigurationRoot Configuration { get; }
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
+            Configuration = configuration;
+
+
             var builder = new ConfigurationBuilder()
-                 .SetBasePath(env.ContentRootPath)
-                 .AddJsonFile("resxlocalization.json", true, true);
-
-            //if (env.IsDevelopment())
-            //{
-            //    builder.AddUserSecrets();
-            //}
-
+               .SetBasePath(env.ContentRootPath)
+               .AddJsonFile("resxlocalization.json", true, true);
             builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
+            ResxConfiguration = builder.Build();
         }
+
+        public IConfiguration Configuration { get; }
+
+        public IConfiguration ResxConfiguration { get; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
             services.AddFileLocalization(options => { options.ResourcesPath = "Resources"; });
+
             services.AddMvcCore()
                     .AddJsonFormatters()
                     .AddViewLocalization()
                     .AddDataAnnotationsLocalization();
-            services.AddLocalRequestLocalization(Configuration);
-          
-            
-            //services.AddLocalRequestLocalization(options =>
-            //{
-            //    var vSupCulture = new List<CultureInfo>()
-            //    {
-            //    new CultureInfo("zh-CN"),
-            //    new CultureInfo("fr-FR"),
-            //    new CultureInfo("en-US")
-            //    };
-            //    options.DefaultRequestCulture = new RequestCulture("zh-CN");
-            //    options.SupportedCultures = vSupCulture;
-            //    options.SupportedUICultures = vSupCulture;
-            //    options.SupportedAliasUICultures = new List<KeyValuePair<string, string>>()
-            //    {
-            //    new KeyValuePair<string,string>("china","zh-CN"),
-            //    new KeyValuePair<string,string>("fr","fr-FR"),
-            //    new KeyValuePair<string,string>("usa","en-US")
-            //    };
-            //});
+
+            services.AddLocalRequestLocalization(ResxConfiguration);
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            loggerFactory.AddConsole(LogLevel.Debug);
-            loggerFactory.AddDebug();
+           
             //启用Resx的本地化
             app.UseLocalRequestLocalization();
 

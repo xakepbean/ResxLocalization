@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+//using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -10,6 +15,10 @@ namespace Xakep.AspNetCore.Localization
 {
     public class LocalRequestLocalizationOptions : RequestLocalizationOptions
     {
+        //public string BasePath { get; set; }
+
+        //public string LocalFile { get; set; }
+        private string _ContentRootPath;
         private IConfiguration _config = null;
 
         private string _DefaultCulture = string.Empty;
@@ -25,9 +34,12 @@ namespace Xakep.AspNetCore.Localization
 
         public LocalRequestLocalizationOptions() : base()
         {
+
         }
 
         public List<AliasCulture> SupportedAlias { get; set; }
+
+        //public ConcurrentDictionary<string, AliasCulture> _missingManifestCache = new ConcurrentDictionary<string, AliasCulture>();
 
         public bool AcceptLanguage { get; set; } = true;
 
@@ -40,13 +52,13 @@ namespace Xakep.AspNetCore.Localization
         public bool AcceptQueryString { get; set; } = true;
         public string QueryStringKey { get; set; } = "culture";
 
-        public void FormatJson(IConfiguration Config)
+        public void FormatJson(IConfiguration config)
         {
-            _config = Config;
-            FormatJson();
+            _config = config;
+            Format();
         }
 
-        private void FormatJson()
+        private void Format()
         {
             if (_config != null)
             {
@@ -69,7 +81,7 @@ namespace Xakep.AspNetCore.Localization
 
         public string ToJson()
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(new
+            return JsonConvert.SerializeObject(new
             {
                 DefaultCulture = DefaultCulture,
                 AcceptLanguage = AcceptLanguage,
@@ -84,12 +96,14 @@ namespace Xakep.AspNetCore.Localization
 
         public LocalRequestLocalizationOptions GetReload()
         {
+            Debug.WriteLine("调用了GetReload");
             if (_config == null)
                 return this;
-            //if (_config.GetReloadToken().HasChanged)
-            //{
-            FormatJson();
-            //}
+            if (_config.GetReloadToken().HasChanged)
+            {
+                Debug.WriteLine("json配置文件改变");
+                FormatJson(_config);
+            }
             return this;
         }
     }
@@ -101,6 +115,4 @@ namespace Xakep.AspNetCore.Localization
         public bool Enabled { get; set; }
 
     }
-
-
 }
